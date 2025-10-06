@@ -1,35 +1,53 @@
+package coffee.service;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
-public class CustomerManager {
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+public class CustomerService {
 
-        System.out.print("Nhập họ tên: ");
-        String name = scanner.nextLine();
+    // 🟩 Chức năng: Thêm khách hàng mới và lưu vào file .txt
+    public void themKhachHangVaLuuFile() {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Nhập mã khách hàng: ");
+        String maKH = sc.nextLine();
+
+        System.out.print("Nhập tên khách hàng: ");
+        String tenKH = sc.nextLine();
 
         System.out.print("Nhập số điện thoại: ");
-        String phone = scanner.nextLine();
+        String sdt = sc.nextLine();
 
         System.out.print("Nhập email: ");
-        String email = scanner.nextLine();
+        String email = sc.nextLine();
 
         System.out.print("Nhập địa chỉ: ");
-        String address = scanner.nextLine();
+        String diaChi = sc.nextLine();
 
-        if (name.isEmpty() || phone.isEmpty()) {
-            System.out.println("Họ tên và số điện thoại là bắt buộc!");
+        System.out.print("Nhập điểm tích lũy ban đầu: ");
+        int diem = 0;
+        try {
+            diem = Integer.parseInt(sc.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Điểm nhập không hợp lệ, mặc định là 0.");
+        }
+
+        if (maKH.isEmpty() || tenKH.isEmpty() || sdt.isEmpty()) {
+            System.out.println("Mã KH, tên và số điện thoại là bắt buộc!");
             return;
         }
 
-        try (FileWriter writer = new FileWriter("customers.txt", true)) {
-            String line = String.format("Họ tên: %s | SĐT: %s | Email: %s | Địa chỉ: %s\n",
-                    name, phone, email, address);
-            writer.write(line);
-            System.out.println("Lưu khách hàng thành công!");
+        String thongTin = String.format(
+            "Mã KH: %s | Tên: %s | SĐT: %s | Email: %s | Địa chỉ: %s | Điểm: %d\n",
+            maKH, tenKH, sdt, email, diaChi, diem
+        );
+
+        try (FileWriter fw = new FileWriter("customers.txt", true)) {
+            fw.write(thongTin);
+            System.out.println("✅ Lưu khách hàng thành công!");
         } catch (IOException e) {
-            System.out.println("Lỗi khi ghi file: " + e.getMessage());
+            System.out.println("❌ Lỗi khi ghi file: " + e.getMessage());
         }
     }
 }
