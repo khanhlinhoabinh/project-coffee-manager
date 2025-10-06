@@ -1,9 +1,9 @@
 package coffee.service;
 
 import coffee.model.Drink;
-
-import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 public class DrinkService {
     private List<Drink> drinks = new ArrayList<>();
@@ -133,7 +133,6 @@ public class DrinkService {
             System.out.println("3. Tìm kiếm đồ uống");
             System.out.println("4. Cập nhật đồ uống");
             System.out.println("5. Xóa đồ uống");
-            System.out.println("6. Tìm kiếm khách hàng"); // ✅ thêm lựa chọn mới
             System.out.println("0. Thoát");
             System.out.print("👉 Chọn chức năng: ");
 
@@ -144,33 +143,9 @@ public class DrinkService {
                 case "3": searchDrink(); break;
                 case "4": updateDrink(); break;
                 case "5": deleteDrink(); break;
-                case "6": searchCustomer(); break; // ✅ gọi chức năng tìm khách hàng
                 case "0": return;
                 default: System.out.println("❌ Lựa chọn không hợp lệ!");
             }
         }
     }
-
-    public void searchCustomer() {
-        System.out.print("Nhập từ khóa tìm kiếm (Mã KH / Tên / SĐT): ");
-        String keyword = scanner.nextLine().toLowerCase();
-
-        boolean found = false;
-
-        try (BufferedReader reader = new BufferedReader(new FileReader("customers.txt"))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (line.toLowerCase().contains(keyword)) {
-                    System.out.println("✅ " + line);
-                    found = true;
-                }
-            }
-        } catch (IOException e) {
-            System.out.println("Lỗi đọc file: " + e.getMessage());
-        }
-
-        if (!found) {
-            System.out.println("Không tìm thấy khách hàng nào.");
-        }
-    }
-}
+} 
