@@ -4,6 +4,8 @@ import coffee.model.Drink;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class DrinkService {
     private List<Drink> drinks = new ArrayList<>();
@@ -113,6 +115,21 @@ public class DrinkService {
         drinks.remove(drink);
         System.out.println("🗑️ Đã xóa đồ uống: " + drink.getName());
     }
+    
+    //Xuất menu
+    public static void exportDrinksToTxt(List<Drink> drinks, String filePath) {
+    try (FileWriter writer = new FileWriter(filePath)) {
+        for (Drink drink : drinks) {
+            writer.write("ID: " + drink.getDrinkId() +
+                         ", Name: " + drink.getName() +
+                         ", Category: " + drink.getCategory() +
+                         ", Price: " + drink.getPrice() +
+                         ", Size: " + drink.getSize() +
+                         ", Status: " + drink.getStatus() + "\n");
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
 
     // Tìm theo ID (hàm tiện ích)
     private Drink findById(String id) {
@@ -149,3 +166,8 @@ public class DrinkService {
         }
     }
 } 
+
+
+
+
+}
