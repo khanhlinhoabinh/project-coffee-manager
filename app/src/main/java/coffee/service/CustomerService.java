@@ -22,7 +22,7 @@ public class CustomerService {
             System.out.println("❌ Lỗi khi ghi file: " + e.getMessage());
         }
     }
-    public static void addCustomer() {
+    public static void themKhachHangVaLuuFile() {
         Scanner scanner = new Scanner(System.in);
 
         System.out.print("Nhập họ tên: ");
