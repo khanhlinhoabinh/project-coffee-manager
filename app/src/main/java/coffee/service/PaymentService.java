@@ -3,9 +3,13 @@ package coffee.service;
 import java.io.*;
 import java.time.LocalDate;
 import java.util.Scanner;
+import java.time.LocalDateTime;
+import java.util.*;
 
 public class PaymentService {
-    
+    private final String FILE_NAME = "payments.txt";
+    private Scanner sc = new Scanner(System.in);
+
     // 🟩 Chức năng 1: Tạo thanh toán mới và lưu vào file .txt
     public void taoThanhToanMoi() {
         Scanner sc = new Scanner(System.in);
@@ -39,5 +43,55 @@ public class PaymentService {
             System.out.println("❌ Lỗi ghi file: " + e.getMessage());
         }
     }
+
+    // 🟦 Chức Năng 4: Tìm kiếm thanh toán theo mã TT, mã đơn hoặc ngày
+    public void timKiemThanhToan() {
+        System.out.print("Nhập từ khóa tìm kiếm (mã TT, mã đơn, hoặc ngày): ");
+        String keyword = sc.nextLine().trim().toLowerCase();
+
+        File file = new File(FILE_NAME);
+        if (!file.exists()) {
+            System.out.println("⚠️ File chưa tồn tại!");
+            return;
+        }
+
+        boolean found = false;
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.toLowerCase().contains(keyword)) {
+                    System.out.println("🔍 " + line);
+                    found = true;
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("❌ Lỗi đọc file: " + e.getMessage());
+        }
+
+        if (!found)
+            System.out.println("❌ Không tìm thấy kết quả phù hợp!");
+    }
     
+    // 🟩 Feature 5: Quản lý phương thức thanh toán
+    public void quanLyPhuongThucThanhToan() {
+        System.out.println("\n===== Quản lý phương thức thanh toán =====");
+        System.out.println("1. Tiền mặt");
+        System.out.println("2. Thẻ ngân hàng");
+        System.out.println("3. QR Code");
+        System.out.println("4. Ví điện tử (Momo/ZaloPay)");
+        System.out.println("5. Khác");
+        System.out.print("➡️ Chọn phương thức: ");
+        String chon = sc.nextLine();
+
+        String method;
+        switch (chon) {
+            case "1" -> method = "Tiền mặt";
+            case "2" -> method = "Thẻ ngân hàng";
+            case "3" -> method = "QR Code";
+            case "4" -> method = "Ví điện tử";
+            default -> method = "Khác";
+        }
+
+        System.out.println("✅ Phương thức thanh toán đã chọn: " + method);
+    }
 }
