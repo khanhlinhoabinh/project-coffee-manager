@@ -3,6 +3,12 @@
  */
 package coffee;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import coffee.model.Customer;
+import coffee.service.CustomerService;
+
 public class App {
     public String getGreeting() {
         return "Hello World!";
