@@ -94,4 +94,45 @@ public class PaymentService {
 
         System.out.println("✅ Phương thức thanh toán đã chọn: " + method);
     }
+
+    // 🟧 Chức năng 6: In hóa đơn thanh toán
+    public void inHoaDon() {
+        System.out.print("Nhập mã thanh toán cần in hóa đơn: ");
+        String paymentId = sc.nextLine().trim();
+
+        File file = new File(FILE_NAME);
+        if (!file.exists()) {
+            System.out.println("⚠️ Chưa có dữ liệu thanh toán!");
+            return;
+        }
+
+        boolean found = false;
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length == 5 && parts[0].equalsIgnoreCase(paymentId)) {
+                    found = true;
+                    System.out.println("\n===============================");
+                    System.out.println("         🧾 HÓA ĐƠN THANH TOÁN");
+                    System.out.println("===============================");
+                    System.out.println("Mã thanh toán : " + parts[0]);
+                    System.out.println("Mã đơn hàng   : " + parts[1]);
+                    System.out.println("Số tiền       : " + parts[2] + " VND");
+                    System.out.println("Phương thức   : " + parts[3]);
+                    System.out.println("Ngày thanh toán: " + parts[4]);
+                    System.out.println("===============================");
+                    System.out.println(" Cảm ơn quý khách đã mua hàng!");
+                    System.out.println("===============================\n");
+                    break;
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("❌ Lỗi khi đọc file: " + e.getMessage());
+        }
+
+        if (!found) {
+            System.out.println("❌ Không tìm thấy mã thanh toán: " + paymentId);
+        }
+    }
 }
