@@ -2,7 +2,6 @@ package coffee.service;
 
 import java.io.*;
 import java.time.LocalDate;
-import java.util.Scanner;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -39,6 +38,63 @@ public class PaymentService {
             writer.write(paymentId + "," + orderId + "," + amount + "," + method + "," + paymentDate);
             writer.newLine();
             System.out.println("✅ Thanh toán đã được ghi nhận thành công!");
+        } catch (IOException e) {
+            System.out.println("❌ Lỗi ghi file: " + e.getMessage());
+        }
+    }
+
+    // 🟦 Chức năng 2: Cập nhật thông tin thanh toán (số tiền hoặc phương thức)
+    public void capNhatThanhToan() {
+        System.out.print("Nhập mã thanh toán cần cập nhật: ");
+        String paymentId = sc.nextLine().trim();
+
+        File file = new File(FILE_NAME);
+        if (!file.exists()) {
+            System.out.println("⚠️ File chưa tồn tại!");
+            return;
+        }
+
+        List<String> lines = new ArrayList<>();
+        boolean found = false;
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length >= 5 && parts[0].equals(paymentId)) {
+                    System.out.println("🔍 Thông tin hiện tại: " + line);
+                    System.out.print("Nhập số tiền mới (bỏ qua nếu không đổi): ");
+                    String newAmount = sc.nextLine().trim();
+                    System.out.print("Nhập phương thức mới (bỏ qua nếu không đổi): ");
+                    String newMethod = sc.nextLine().trim();
+
+                    if (!newAmount.isEmpty()) parts[2] = newAmount;
+                    if (!newMethod.isEmpty()) parts[3] = newMethod;
+
+                    String newLine = String.join(",", parts);
+                    lines.add(newLine);
+                    found = true;
+                    System.out.println("✅ Đã cập nhật: " + newLine);
+                } else {
+                    lines.add(line);
+                }
+            }
+        } catch (IOException e) {
+        System.out.println("❌ Lỗi đọc file: " + e.getMessage());
+        return;
+        }
+
+        if (!found) {
+            System.out.println("❌ Không tìm thấy mã thanh toán!");
+            return;
+        }
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, false))) {
+            for (String l : lines) {
+                writer.write(l);
+                writer.newLine();
+            }
+            System.out.println("💾 File payments.txt đã được cập nhật!");
         } catch (IOException e) {
             System.out.println("❌ Lỗi ghi file: " + e.getMessage());
         }
