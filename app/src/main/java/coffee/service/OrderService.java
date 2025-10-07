@@ -61,6 +61,33 @@ public class OrderService {
             System.out.println("❌ Lỗi khi ghi file: " + e.getMessage());
         }
     }
+    // 🟩 Chức năng 2: Tìm kiếm đơn hàng theo mã đơn, tên khách hàng hoặc ngày đặt
+    public void timKiemDonHang() {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Nhập từ khóa tìm kiếm (Mã đơn / Tên KH / Ngày đặt): ");
+        String keyword = sc.nextLine().trim().toLowerCase();
+
+        boolean found = false;
+
+        try (BufferedReader reader = new BufferedReader(new FileReader("orders.txt"))) {
+            String line;
+            System.out.println("\n🔎 KẾT QUẢ TÌM KIẾM:");
+            while ((line = reader.readLine()) != null) {
+                // chuyển dòng sang chữ thường để tìm kiếm không phân biệt hoa thường
+                if (line.toLowerCase().contains(keyword)) {
+                    System.out.println(line);
+                    found = true;
+                }
+            }
+
+            if (!found) {
+                System.out.println("❌ Không tìm thấy đơn hàng phù hợp!");
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("⚠️ File đơn hàng chưa tồn tại. Hãy tạo đơn hàng trước!");
+        } catch (IOException e) {
+            System.out.println("❌ Lỗi khi đọc file: " + e.getMessage());
     
     
     // 🟦 Chức năng 5: Cập nhật trạng thái đơn hàng (chờ/đang phục vụ/xong)
