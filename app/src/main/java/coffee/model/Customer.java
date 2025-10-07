@@ -7,6 +7,7 @@ public class Customer implements Serializable {
     private String name;
     private String phone;
     private String email;
+    private String address;
     private String membershipLevel; // regular, vip
 
     public Customer() {}
@@ -16,6 +17,7 @@ public class Customer implements Serializable {
         this.name = name;
         this.phone = phone;
         this.email = email;
+        this.address = address;
         this.membershipLevel = membershipLevel;
     }
 
@@ -30,6 +32,9 @@ public class Customer implements Serializable {
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
+
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
 
     public String getMembershipLevel() { return membershipLevel; }
     public void setMembershipLevel(String membershipLevel) { this.membershipLevel = membershipLevel; }
