@@ -61,7 +61,133 @@ public class OrderService {
             System.out.println("❌ Lỗi khi ghi file: " + e.getMessage());
         }
     }
-    // 🟩 Chức năng 2: Tìm kiếm đơn hàng theo mã đơn, tên khách hàng hoặc ngày đặt
+
+    // 🟧 Chức năng 2: Cập nhật đơn hàng (sửa thông tin sản phẩm hoặc số lượng)
+public void capNhatDonHang() {
+    Scanner sc = new Scanner(System.in);
+    System.out.print("Nhập mã đơn hàng cần cập nhật: ");
+    String maDH = sc.nextLine().trim();
+
+    File file = new File("orders.txt");
+    if (!file.exists()) {
+        System.out.println("⚠️ File orders.txt chưa tồn tại!");
+        return;
+    }
+
+    List<String> ds = new ArrayList<>();
+    boolean found = false;
+
+    try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+        String line;
+        while ((line = br.readLine()) != null) {
+            if (line.contains("Mã đơn: " + maDH + " ")) {
+                found = true;
+                System.out.println("🔹 Dòng cần cập nhật:\n" + line);
+
+                System.out.print("Nhập tên sản phẩm mới (Enter nếu giữ nguyên): ");
+                String tenSP = sc.nextLine().trim();
+                if (!tenSP.isEmpty()) {
+                    line = line.replaceAll("\\| SP: [^|]*", "| SP: " + tenSP);
+                }
+
+                System.out.print("Nhập số lượng mới (Enter nếu giữ nguyên): ");
+                String soLuongStr = sc.nextLine().trim();
+                if (!soLuongStr.isEmpty()) {
+                    try {
+                        int soLuong = Integer.parseInt(soLuongStr);
+                        line = line.replaceAll("\\| SL: \\d+", "| SL: " + soLuong);
+                    } catch (NumberFormatException e) {
+                        System.out.println("❌ Số lượng không hợp lệ!");
+                    }
+                }
+
+                System.out.print("Nhập đơn giá mới (Enter nếu giữ nguyên): ");
+                String donGiaStr = sc.nextLine().trim();
+                if (!donGiaStr.isEmpty()) {
+                    try {
+                        double donGia = Double.parseDouble(donGiaStr);
+                        line = line.replaceAll("\\| Đơn giá: [^|]*", "| Đơn giá: " + donGia);
+                    } catch (NumberFormatException e) {
+                        System.out.println("❌ Đơn giá không hợp lệ!");
+                    }
+                }
+
+                ds.add(line);
+                System.out.println("✅ Đã cập nhật đơn hàng!");
+            } else {
+                ds.add(line);
+            }
+        }
+    } catch (IOException e) {
+        System.out.println("❌ Lỗi đọc file: " + e.getMessage());
+        return;
+    }
+
+    if (!found) {
+        System.out.println("⚠️ Không tìm thấy mã đơn hàng!");
+        return;
+    }
+
+    try (FileWriter fw = new FileWriter(file, false)) {
+        for (String l : ds) fw.write(l + System.lineSeparator());
+        System.out.println("💾 File orders.txt đã được cập nhật!");
+    } catch (IOException e) {
+        System.out.println("❌ Lỗi ghi file: " + e.getMessage());
+    }
+}
+
+// 🟥 Chức năng 3: Hủy đơn hàng (xóa dòng chưa thanh toán)
+public void huyDonHang() {
+    Scanner sc = new Scanner(System.in);
+    System.out.print("Nhập mã đơn hàng cần hủy: ");
+    String maDH = sc.nextLine().trim();
+
+    File file = new File("orders.txt");
+    if (!file.exists()) {
+        System.out.println("⚠️ File orders.txt chưa tồn tại!");
+        return;
+    }
+
+    List<String> ds = new ArrayList<>();
+    boolean found = false;
+
+    try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+        String line;
+        while ((line = br.readLine()) != null) {
+            if (line.contains("Mã đơn: " + maDH + " ")) {
+                found = true;
+                System.out.println("🗑️ Đơn hàng sau sẽ bị hủy:\n" + line);
+                System.out.print("Xác nhận hủy? (y/n): ");
+                String confirm = sc.nextLine().trim().toLowerCase();
+                if (!confirm.equals("y")) {
+                    ds.add(line);
+                    System.out.println("✅ Đơn hàng chưa bị xóa.");
+                } else {
+                    System.out.println("❌ Đã hủy đơn hàng!");
+                }
+            } else {
+                ds.add(line);
+            }
+        }
+    } catch (IOException e) {
+        System.out.println("❌ Lỗi đọc file: " + e.getMessage());
+        return;
+    }
+
+    if (!found) {
+        System.out.println("⚠️ Không tìm thấy đơn hàng cần hủy!");
+        return;
+    }
+
+    try (FileWriter fw = new FileWriter(file, false)) {
+        for (String l : ds) fw.write(l + System.lineSeparator());
+        System.out.println("💾 File orders.txt đã được cập nhật sau khi hủy!");
+    } catch (IOException e) {
+        System.out.println("❌ Lỗi ghi file: " + e.getMessage());
+    }
+}
+
+    // 🟩 Chức năng 4: Tìm kiếm đơn hàng theo mã đơn, tên khách hàng hoặc ngày đặt
     public void timKiemDonHang() {
         Scanner sc = new Scanner(System.in);
 
