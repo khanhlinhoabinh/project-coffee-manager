@@ -11,7 +11,7 @@ public class DrinkService {
     private List<Drink> drinks = new ArrayList<>();
     private Scanner scanner = new Scanner(System.in);
 
-    // Thêm đồ uống
+    // 🟩 Thêm đồ uống
     public void addDrink() {
         System.out.print("Nhập ID đồ uống: ");
         String id = scanner.nextLine();
@@ -37,7 +37,7 @@ public class DrinkService {
         System.out.println("✅ Đã thêm đồ uống: " + drink);
     }
 
-    // Hiển thị danh sách
+    // 🟦 Hiển thị danh sách
     public void displayAll() {
         if (drinks.isEmpty()) {
             System.out.println("❌ Danh sách đồ uống trống.");
@@ -49,7 +49,7 @@ public class DrinkService {
         }
     }
 
-    // Tìm kiếm đồ uống theo tên
+    // 🟨 Tìm kiếm đồ uống theo tên
     public void searchDrink() {
         System.out.print("Nhập tên đồ uống cần tìm: ");
         String keyword = scanner.nextLine().toLowerCase();
@@ -67,7 +67,7 @@ public class DrinkService {
         }
     }
 
-    // Cập nhật thông tin đồ uống
+    // 🟧 Cập nhật thông tin đồ uống
     public void updateDrink() {
         System.out.print("Nhập ID đồ uống cần sửa: ");
         String id = scanner.nextLine();
@@ -101,7 +101,7 @@ public class DrinkService {
         System.out.println("✅ Đã cập nhật đồ uống: " + drink);
     }
 
-    // Xóa đồ uống
+    // 🟥 Xóa đồ uống
     public void deleteDrink() {
         System.out.print("Nhập ID đồ uống cần xóa: ");
         String id = scanner.nextLine();
@@ -115,23 +115,25 @@ public class DrinkService {
         drinks.remove(drink);
         System.out.println("🗑️ Đã xóa đồ uống: " + drink.getName());
     }
-    
-    //Xuất menu
+
+    // 🟪 Xuất danh sách đồ uống ra file TXT
     public static void exportDrinksToTxt(List<Drink> drinks, String filePath) {
-    try (FileWriter writer = new FileWriter(filePath)) {
-        for (Drink drink : drinks) {
-            writer.write("ID: " + drink.getDrinkId() +
-                         ", Name: " + drink.getName() +
-                         ", Category: " + drink.getCategory() +
-                         ", Price: " + drink.getPrice() +
-                         ", Size: " + drink.getSize() +
-                         ", Status: " + drink.getStatus() + "\n");
+        try (FileWriter writer = new FileWriter(filePath)) {
+            for (Drink drink : drinks) {
+                writer.write("ID: " + drink.getDrinkId() +
+                             ", Name: " + drink.getName() +
+                             ", Category: " + drink.getCategory() +
+                             ", Price: " + drink.getPrice() +
+                             ", Size: " + drink.getSize() +
+                             ", Status: " + drink.getStatus() + "\n");
+            }
+            System.out.println("💾 Đã xuất danh sách đồ uống ra file: " + filePath);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-    } catch (IOException e) {
-        e.printStackTrace();
     }
 
-    // Tìm theo ID (hàm tiện ích)
+    // 🧩 Hàm tiện ích: tìm theo ID
     private Drink findById(String id) {
         for (Drink d : drinks) {
             if (d.getDrinkId().equals(id)) {
@@ -141,7 +143,7 @@ public class DrinkService {
         return null;
     }
 
-    // Menu quản lý đồ uống
+    // 🧠 Menu quản lý đồ uống (console)
     public void menu() {
         while (true) {
             System.out.println("\n===== MENU QUẢN LÝ ĐỒ UỐNG =====");
@@ -150,6 +152,7 @@ public class DrinkService {
             System.out.println("3. Tìm kiếm đồ uống");
             System.out.println("4. Cập nhật đồ uống");
             System.out.println("5. Xóa đồ uống");
+            System.out.println("6. Xuất danh sách ra file");
             System.out.println("0. Thoát");
             System.out.print("👉 Chọn chức năng: ");
 
@@ -160,14 +163,10 @@ public class DrinkService {
                 case "3": searchDrink(); break;
                 case "4": updateDrink(); break;
                 case "5": deleteDrink(); break;
+                case "6": exportDrinksToTxt(drinks, "drinks.txt"); break;
                 case "0": return;
                 default: System.out.println("❌ Lựa chọn không hợp lệ!");
             }
         }
     }
-} 
-
-
-
-
 }
