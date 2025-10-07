@@ -128,6 +128,41 @@ public class CustomerService {
             System.out.println("❌ Lỗi khi ghi file: " + e.getMessage());
         }
     }
+        // 🟩 Chức năng 4: Tìm kiếm khách hàng theo Mã KH, Tên hoặc SĐT
+    public void timKiemKhachHang() {
+        System.out.print("🔍 Nhập từ khóa tìm kiếm (Mã KH / Tên / SĐT): ");
+        String keyword = sc.nextLine().trim().toLowerCase();
+
+        File file = new File(FILE_PATH);
+        if (!file.exists()) {
+            System.out.println("⚠️ File customers.txt chưa tồn tại!");
+            return;
+        }
+
+        boolean found = false;
+        System.out.println("\n===== KẾT QUẢ TÌM KIẾM =====");
+
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String lineLower = line.toLowerCase();
+                if (lineLower.contains(keyword)) {
+                    System.out.println(line);
+                    found = true;
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("❌ Lỗi đọc file: " + e.getMessage());
+            return;
+        }
+
+        if (!found) {
+            System.out.println("❗ Không tìm thấy khách hàng nào phù hợp với từ khóa \"" + keyword + "\".");
+        } else {
+            System.out.println("===============================");
+        }
+    }
+
 
     // 🟦 Chức năng 6: Cập nhật điểm tích lũy sau thanh toán
     public void capNhatDiemTichLuy() {
@@ -311,10 +346,12 @@ public class CustomerService {
         JButton btnUpdate = new JButton("Cập nhật điểm");
         JButton btnLoai = new JButton("Cập nhật loại");
         JButton btnExport = new JButton("Xuất danh sách");
+        JButton btnSearch = new JButton("Tìm kiếm");
         panel.add(btnAdd);
         panel.add(btnUpdate);
         panel.add(btnLoai);
         panel.add(btnExport);
+        panel.add(btnSearch);
         frame.add(panel, BorderLayout.SOUTH);
 
         // Nạp dữ liệu từ file
@@ -339,6 +376,9 @@ public class CustomerService {
         });
         btnExport.addActionListener(e -> {
         xuatDanhSachKhachHang();
+        });
+        btnSearch.addActionListener(e -> {
+        timKiemKhachHang();
         });
 
 
