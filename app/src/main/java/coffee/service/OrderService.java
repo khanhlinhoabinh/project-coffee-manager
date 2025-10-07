@@ -272,4 +272,88 @@ public void huyDonHang() {
             System.out.println("❌ Lỗi ghi file: " + e.getMessage());
         }
     }
+
+    // 🟨 chức năng 6: Xuất danh sách đơn hàng ra file để lưu trữ hoặc tham khảo
+    public void xuatDanhSachDonHang() {
+        File file = new File("orders.txt");
+        if (!file.exists()) {
+            System.out.println("⚠️ Chưa có đơn hàng nào để xuất!");
+            return;
+        }
+
+        System.out.print("Nhập tên file muốn xuất (vd: backup_orders.txt): ");
+        Scanner sc = new Scanner(System.in);
+        String tenFileXuat = sc.nextLine().trim();
+
+        if (tenFileXuat.isEmpty()) {
+            tenFileXuat = "orders_backup_" + LocalDate.now() + ".txt";
+        }
+
+        try (
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            FileWriter writer = new FileWriter(tenFileXuat)
+        ) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                writer.write(line + System.lineSeparator());
+            }
+            System.out.println("✅ Đã xuất danh sách đơn hàng ra file: " + tenFileXuat);
+        } catch (IOException e) {
+            System.out.println("❌ Lỗi khi xuất file: " + e.getMessage());
+        }
+    }
+
+    // Chức năng 7: Giao diện quản lý đơn hàng 
+public void hienThiGiaoDienQuanLyDonHang() {
+    Scanner sc = new Scanner(System.in);
+    int choice = -1;
+
+    do {
+        System.out.println("\n============================");
+        System.out.println("     QUẢN LÝ ĐƠN HÀNG");
+        System.out.println("============================");
+        System.out.println("1. Tạo đơn hàng mới");
+        System.out.println("2. Cập nhật đơn hàng");
+        System.out.println("3. Hủy đơn hàng");
+        System.out.println("4. Tìm kiếm đơn hàng");
+        System.out.println("5. Cập nhật trạng thái đơn hàng");
+        System.out.println("6. Xuất danh sách đơn hàng ra file");
+        System.out.println("0. Thoát");
+        System.out.print("➡️  Nhập lựa chọn của bạn: ");
+
+        try {
+            choice = Integer.parseInt(sc.nextLine().trim());
+        } catch (NumberFormatException e) {
+            System.out.println("❌ Lỗi: Vui lòng nhập số hợp lệ!");
+            continue;
+        }
+
+        switch (choice) {
+            case 1:
+                this.taoDonHangMoi();
+                break;
+            case 2:
+                this.capNhatDonHang();
+                break;
+            case 3:
+                this.huyDonHang();
+                break;
+            case 4:
+                this.timKiemDonHang();
+                break;
+            case 5:
+                this.capNhatTrangThaiDonHang();
+                break;
+            case 6:
+                this.xuatDanhSachDonHang();
+                break;
+            case 0:
+                System.out.println("👋 Thoát quản lý đơn hàng.");
+                break;
+            default:
+                System.out.println("⚠️  Lựa chọn không hợp lệ. Vui lòng thử lại!");
+        }
+    } while (choice != 0);
+}
+
 }
