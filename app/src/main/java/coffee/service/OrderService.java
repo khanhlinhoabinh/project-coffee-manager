@@ -88,6 +88,59 @@ public class OrderService {
             System.out.println("⚠️ File đơn hàng chưa tồn tại. Hãy tạo đơn hàng trước!");
         } catch (IOException e) {
             System.out.println("❌ Lỗi khi đọc file: " + e.getMessage());
+    
+    
+    // 🟦 Chức năng 5: Cập nhật trạng thái đơn hàng (chờ/đang phục vụ/xong)
+    public void capNhatTrangThaiDonHang() {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Nhập mã đơn hàng cần cập nhật trạng thái: ");
+        String maDH = sc.nextLine().trim();
+
+        System.out.print("Nhập trạng thái mới (chờ/đang phục vụ/xong): ");
+        String trangThaiMoi = sc.nextLine().trim();
+
+        File file = new File("orders.txt");
+        if (!file.exists()) {
+            System.out.println("⚠️ File orders.txt chưa tồn tại!");
+            return;
+        }
+
+        List<String> ds = new ArrayList<>();
+        boolean found = false;
+
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (line.contains("Mã đơn: " + maDH + " ")) {
+                    // Thay đổi trạng thái trong dòng đơn hàng
+                    String newLine;
+                    if (line.contains("| Trạng thái:")) {
+                        newLine = line.replaceAll("\\| Trạng thái: [^|]*", "| Trạng thái: " + trangThaiMoi);
+                    } else {
+                        newLine = line.trim() + " | Trạng thái: " + trangThaiMoi;
+                    }
+                    ds.add(newLine);
+                    found = true;
+                    System.out.println("✅ Đã cập nhật trạng thái: " + newLine);
+                } else {
+                    ds.add(line);
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("❌ Lỗi đọc file: " + e.getMessage());
+            return;
+        }
+
+        if (!found) {
+            System.out.println("⚠️ Không tìm thấy đơn hàng!");
+            return;
+        }
+
+        try (FileWriter fw = new FileWriter(file, false)) {
+            for (String l : ds) fw.write(l + System.lineSeparator());
+            System.out.println("💾 File orders.txt đã được cập nhật!");
+        } catch (IOException e) {
+            System.out.println("❌ Lỗi ghi file: " + e.getMessage());
         }
     }
 }
