@@ -1,53 +1,21 @@
 package coffee.service;
-
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-
-import java.util.List;
-import java.util.Scanner;
+import coffee.model.Customer;
 import java.io.*;
 import java.util.*;
+import java.util.List;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.List;
-import coffee.service.CustomerService;
+
 
 
 public class CustomerService {
 
-
-    // 🟩 Chức năng: Thêm khách hàng mới và lưu vào file .txt
+    // 🟩 Chức năng 1: Thêm khách hàng mới và lưu vào file .txt
     public void themKhachHangVaLuuFile() {
         Scanner sc = new Scanner(System.in);
-
-import coffee.model.Customer;
-
-public class CustomerService {
-    public void exportCustomersToTxt(List<Customer> customers, String filePath) {
-        try (FileWriter writer = new FileWriter(filePath)) {
-            for (Customer customer : customers) {
-                writer.write("Họ tên: " + customer.getName() +
-                             " | SĐT: " + customer.getPhone() +
-                             " | Email: " + customer.getEmail() +
-                             " | Địa chỉ: " + customer.getAddress() +
-                             " | Loại thành viên: " + customer.getMembershipLevel() + "\n");
-            }
-            System.out.println("✅ Đã xuất danh sách khách hàng ra file: " + filePath);
-        } catch (IOException e) {
-            System.out.println("❌ Lỗi khi ghi file: " + e.getMessage());
-        }
-    }
-    public static void themKhachHangVaLuuFile() {
-        Scanner scanner = new Scanner(System.in);
-
-
+        
         System.out.print("Nhập mã khách hàng: ");
         String maKH = sc.nextLine();
 
@@ -88,87 +56,8 @@ public class CustomerService {
             System.out.println("❌ Lỗi khi ghi file: " + e.getMessage());
         }
     }
-     public void suaThongTinKhachHang() {
-        Scanner sc = new Scanner(System.in);
-        System.out.print("Nhập mã khách hàng cần sửa: ");
-        String maKH = sc.nextLine();
 
-        List<String> lines = docTatCaDong();
-        boolean found = false;
-
-        for (int i = 0; i < lines.size(); i++) {
-            if (lines.get(i).contains("Mã KH: " + maKH + " ")) {
-                System.out.println("Khách hàng tìm thấy: " + lines.get(i));
-                System.out.print("Nhập tên mới: ");
-                String tenMoi = sc.nextLine();
-                System.out.print("Nhập SĐT mới: ");
-                String sdtMoi = sc.nextLine();
-                System.out.print("Nhập email mới: ");
-                String emailMoi = sc.nextLine();
-                System.out.print("Nhập địa chỉ mới: ");
-                String diaChiMoi = sc.nextLine();
-
-                String capNhat = String.format(
-                    "Mã KH: %s | Tên: %s | SĐT: %s | Email: %s | Địa chỉ: %s | Điểm: %d",
-                    maKH,
-                    tenMoi.isEmpty() ? layGiaTriCu(lines.get(i), "Tên") : tenMoi,
-                    sdtMoi.isEmpty() ? layGiaTriCu(lines.get(i), "SĐT") : sdtMoi,
-                    emailMoi.isEmpty() ? layGiaTriCu(lines.get(i), "Email") : emailMoi,
-                    diaChiMoi.isEmpty() ? layGiaTriCu(lines.get(i), "Địa chỉ") : diaChiMoi,
-                    Integer.parseInt(layGiaTriCu(lines.get(i), "Điểm"))
-                );
-
-                lines.set(i, capNhat);
-                found = true;
-                break;
-            }
-        }
-
-        if (found) {
-            ghiLaiFile(lines);
-            System.out.println("✅ Cập nhật thông tin khách hàng thành công!");
-        } else {
-            System.out.println("❌ Không tìm thấy khách hàng!");
-        }
-    }
-     // 🔹 Hàm phụ trợ: đọc file
-    private List<String> docTatCaDong() {
-        List<String> lines = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader("customers.txt"))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                if (!line.trim().isEmpty()) lines.add(line);
-            }
-        } catch (IOException e) {
-            // file có thể chưa tồn tại
-        }
-        return lines;
-    }
-    // 🔹 Hàm phụ trợ: ghi lại file
-    private void ghiLaiFile(List<String> lines) {
-        try (FileWriter fw = new FileWriter("customers.txt")) {
-            for (String line : lines) {
-                fw.write(line + "\n");
-            }
-        } catch (IOException e) {
-            System.out.println("❌ Lỗi khi ghi lại file: " + e.getMessage());
-        }
-    }
-    // 🔹 Hàm phụ trợ: lấy giá trị cũ từ chuỗi
-    private String layGiaTriCu(String line, String truong) {
-        try {
-            String[] parts = line.split("\\|");
-            for (String p : parts) {
-                if (p.trim().startsWith(truong + ":")) {
-                    return p.split(":", 2)[1].trim();
-                }
-            }
-        } catch (Exception e) {
-            // bỏ qua
-        }
-        return "";
-    }
-
+    // 🟦 Chức năng 6: Cập nhật điểm tích lũy sau thanh toán
     public void capNhatDiemTichLuy() {
         Scanner sc = new Scanner(System.in);
 
@@ -199,10 +88,10 @@ public class CustomerService {
                 if (line.contains("SĐT: " + sdt)) {
                     found = true;
                     int idx = line.lastIndexOf("Điểm:");
-                    int diemCu = Integer.parseInt(line.substring(idx + 6).trim());
+                    int diemCu = Integer.parseInt(line.substring(idx + 5).trim());
                     int diemCong = (int) (tongTien / 10000); // 1 điểm / 10.000đ
                     int diemMoi = diemCu + diemCong;
-                    line = line.substring(0, idx) + "Điểm: " + diemMoi;
+                    line = line.substring(0, idx).trim() + " | Điểm: " + diemMoi;
                     System.out.println("✅ Điểm tích lũy đã được cập nhật: " + diemMoi);
                 }
                 ds.add(line);
@@ -218,13 +107,14 @@ public class CustomerService {
         }
 
         try (FileWriter fw = new FileWriter(file, false)) {
-            for (String l : ds) fw.write(l + "\n");
+            for (String l : ds) fw.write(l.strip() + System.lineSeparator());
             System.out.println("💾 Cập nhật điểm tích lũy thành công!");
         } catch (IOException e) {
             System.out.println("❌ Lỗi ghi file: " + e.getMessage());
         }
     }
 
+    // 🟨 Chức năng 8: Giao diện quản lý khách hàng (hiển thị trực quan)
     public void hienThiGiaoDienQuanLy() {
         JFrame frame = new JFrame("Giao diện quản lý khách hàng");
         frame.setSize(900, 500);
@@ -285,23 +175,15 @@ public class CustomerService {
                     model.addRow(new Object[]{maKH, ten, sdt, email, diaChi, diem});
                 }
             }
-        System.out.print("Nhập loại thành viên (thường/VIP/thân thiết): ");
-        String membershipLevel = scanner.nextLine();
-
-        if (name.isEmpty() || phone.isEmpty()) {
-            System.out.println("Họ tên và số điện thoại là bắt buộc!");
-            return;
-        }
-
-        try (FileWriter writer = new FileWriter("customers.txt", true)) {
-            String line = String.format("Họ tên: %s | SĐT: %s | Email: %s | Địa chỉ: %s | Loại thành viên: %s\n",
-                    name, phone, email, address, membershipLevel);
-            writer.write(line);
-            System.out.println("Lưu khách hàng thành công!");
         } catch (IOException e) {
             System.out.println("❌ Lỗi đọc file: " + e.getMessage());
         }
+    }
 
-        
+    // 🟢 Hàm main để chạy giao diện
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            new CustomerService().hienThiGiaoDienQuanLy();
+        });
     }
 }
