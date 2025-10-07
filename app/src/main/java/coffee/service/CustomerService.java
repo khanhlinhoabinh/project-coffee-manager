@@ -10,6 +10,12 @@ import java.util.List;
 import java.util.Scanner;
 import java.io.*;
 import java.util.*;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.List;
+import coffee.service.CustomerService;
 
 
 public class CustomerService {
@@ -114,4 +120,68 @@ public class CustomerService {
         }
     }
 
+    public void hienThiGiaoDienQuanLy() {
+        JFrame frame = new JFrame("Giao diện quản lý khách hàng");
+        frame.setSize(900, 500);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+
+        // Bảng dữ liệu
+        DefaultTableModel model = new DefaultTableModel(
+            new String[]{"Mã KH", "Tên", "SĐT", "Email", "Địa chỉ", "Điểm"}, 0
+        );
+        JTable table = new JTable(model);
+        JScrollPane scrollPane = new JScrollPane(table);
+        frame.add(scrollPane, BorderLayout.CENTER);
+
+        // Thanh nút chức năng
+        JPanel panel = new JPanel();
+        JButton btnAdd = new JButton("Thêm KH");
+        JButton btnUpdate = new JButton("Cập nhật điểm");
+        panel.add(btnAdd);
+        panel.add(btnUpdate);
+        frame.add(panel, BorderLayout.SOUTH);
+
+        // Nạp dữ liệu từ file
+        napDuLieuTuFile(model);
+
+        // Sự kiện nút
+        btnAdd.addActionListener(e -> {
+            themKhachHangVaLuuFile();
+            model.setRowCount(0);
+            napDuLieuTuFile(model);
+        });
+
+        btnUpdate.addActionListener(e -> {
+            capNhatDiemTichLuy();
+            model.setRowCount(0);
+            napDuLieuTuFile(model);
+        });
+
+        frame.setVisible(true);
+    }
+
+    // 🧩 Hàm phụ: đọc file customers.txt và đổ dữ liệu lên bảng
+    private void napDuLieuTuFile(DefaultTableModel model) {
+        File file = new File("customers.txt");
+        if (!file.exists()) return;
+
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = br.readLine()) != null && !line.isEmpty()) {
+                String[] parts = line.split("\\|");
+                if (parts.length >= 6) {
+                    String maKH = parts[0].replace("Mã KH:", "").trim();
+                    String ten = parts[1].replace("Tên:", "").trim();
+                    String sdt = parts[2].replace("SĐT:", "").trim();
+                    String email = parts[3].replace("Email:", "").trim();
+                    String diaChi = parts[4].replace("Địa chỉ:", "").trim();
+                    String diem = parts[5].replace("Điểm:", "").trim();
+                    model.addRow(new Object[]{maKH, ten, sdt, email, diaChi, diem});
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("❌ Lỗi đọc file: " + e.getMessage());
+        }
+    }
 }
