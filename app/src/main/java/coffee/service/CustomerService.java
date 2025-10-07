@@ -11,11 +11,13 @@ import java.awt.event.*;
 
 
 public class CustomerService {
+    private static final String FILE_PATH = "customers.txt";
+    private static final Scanner sc = new Scanner(System.in);
+
 
     // 🟩 Chức năng 1: Thêm khách hàng mới và lưu vào file .txt
     public void themKhachHangVaLuuFile() {
-        Scanner sc = new Scanner(System.in);
-        
+
         System.out.print("Nhập mã khách hàng: ");
         String maKH = sc.nextLine();
 
@@ -57,6 +59,76 @@ public class CustomerService {
         }
     }
 
+        // 🟦 Chức năng 3: Cập nhật thông tin khách hàng (tên, SĐT, loại thành viên)
+    public void capNhatThongTinKhachHang() {
+        System.out.print("Nhập mã khách hàng cần sửa: ");
+        String maKH = sc.nextLine().trim();
+
+        File file = new File(FILE_PATH);
+        if (!file.exists()) {
+            System.out.println("⚠️ File customers.txt chưa tồn tại!");
+            return;
+        }
+
+        List<String> ds = new ArrayList<>();
+        boolean found = false;
+
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (line.contains("Mã KH: " + maKH)) {
+                    found = true;
+                    System.out.println("🔍 Thông tin cũ: " + line);
+                    System.out.println("=== Nhập thông tin mới ===");
+
+                    System.out.print("Tên mới (Enter để giữ nguyên): ");
+                    String tenMoi = sc.nextLine().trim();
+
+                    System.out.print("SĐT mới (Enter để giữ nguyên): ");
+                    String sdtMoi = sc.nextLine().trim();
+
+                    System.out.print("Loại thành viên (Vàng/Bạc/Đồng - Enter để giữ nguyên): ");
+                    String loaiMoi = sc.nextLine().trim();
+
+                    // Thay đổi từng phần thông tin trong chuỗi
+                    if (!tenMoi.isEmpty()) {
+                        line = line.replaceFirst("\\| Tên: [^|]+", "| Tên: " + tenMoi);
+                    }
+                    if (!sdtMoi.isEmpty()) {
+                        line = line.replaceFirst("\\| SĐT: [^|]+", "| SĐT: " + sdtMoi);
+                    }
+
+                    // Nếu chưa có loại thành viên thì thêm vào cuối
+                    if (line.contains("| Loại:")) {
+                        if (!loaiMoi.isEmpty()) {
+                            line = line.replaceFirst("\\| Loại: [^|]+", "| Loại: " + loaiMoi);
+                        }
+                    } else if (!loaiMoi.isEmpty()) {
+                        line += " | Loại: " + loaiMoi;
+                    }
+
+                    System.out.println("✅ Đã cập nhật thông tin khách hàng!");
+                }
+                ds.add(line);
+            }
+        } catch (IOException e) {
+            System.out.println("❌ Lỗi khi đọc file: " + e.getMessage());
+            return;
+        }
+
+        if (!found) {
+            System.out.println("⚠️ Không tìm thấy khách hàng có mã: " + maKH);
+            return;
+        }
+
+        try (FileWriter fw = new FileWriter(file, false)) {
+            for (String l : ds) fw.write(l + System.lineSeparator());
+            System.out.println("💾 File customers.txt đã được cập nhật!");
+        } catch (IOException e) {
+            System.out.println("❌ Lỗi khi ghi file: " + e.getMessage());
+        }
+    }
+
     // 🟦 Chức năng 6: Cập nhật điểm tích lũy sau thanh toán
     public void capNhatDiemTichLuy() {
         Scanner sc = new Scanner(System.in);
@@ -73,7 +145,7 @@ public class CustomerService {
             return;
         }
 
-        File file = new File("customers.txt");
+        File file = new File(FILE_PATH);
         if (!file.exists()) {
             System.out.println("⚠️ File customers.txt chưa tồn tại!");
             return;
@@ -88,7 +160,7 @@ public class CustomerService {
                 if (line.contains("SĐT: " + sdt)) {
                     found = true;
                     int idx = line.lastIndexOf("Điểm:");
-                    int diemCu = Integer.parseInt(line.substring(idx + 5).trim());
+                    int diemCu = Integer.parseInt(line.substring(idx + 6).trim());
                     int diemCong = (int) (tongTien / 10000); // 1 điểm / 10.000đ
                     int diemMoi = diemCu + diemCong;
                     line = line.substring(0, idx).trim() + " | Điểm: " + diemMoi;
@@ -113,6 +185,110 @@ public class CustomerService {
             System.out.println("❌ Lỗi ghi file: " + e.getMessage());
         }
     }
+    // 🟥 Chức năng 5: Cập nhật loại thành viên (Thường / Thân thiết / VIP)
+    public void capNhatLoaiThanhVien() {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Nhập số điện thoại khách hàng cần cập nhật: ");
+        String sdt = sc.nextLine().trim();
+
+        File file = new File(FILE_PATH);
+        if (!file.exists()) {
+            System.out.println("⚠️ File customers.txt chưa tồn tại!");
+            return;
+        }
+
+        // Gợi ý hạng thành viên
+        System.out.println("Chọn loại thành viên mới:");
+        System.out.println("1. Thường");
+        System.out.println("2. Thân thiết");
+        System.out.println("3. VIP");
+        System.out.print("Nhập lựa chọn (1-3): ");
+        String chon = sc.nextLine().trim();
+
+        String loaiMoi;
+        switch (chon) {
+            case "1":
+                loaiMoi = "Thường";
+                break;
+            case "2":
+                loaiMoi = "Thân thiết";
+                break;
+            case "3":
+                loaiMoi = "VIP";
+                break;
+            default:
+                System.out.println("❌ Lựa chọn không hợp lệ!");
+                return;
+        }
+
+        List<String> ds = new ArrayList<>();
+        boolean found = false;
+
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (line.contains("SĐT: " + sdt)) {
+                    found = true;
+                    // Nếu dòng đã có "Loại:", cập nhật lại
+                    if (line.contains("Loại:")) {
+                        int idx = line.indexOf("Loại:");
+                        line = line.substring(0, idx).trim() + " | Loại: " + loaiMoi;
+                    } else {
+                        // Nếu chưa có, thêm vào cuối dòng
+                        line = line.strip() + " | Loại: " + loaiMoi;
+                    }
+                    System.out.println("✅ Đã cập nhật loại thành viên: " + loaiMoi);
+                }
+                ds.add(line);
+            }
+        } catch (IOException e) {
+            System.out.println("❌ Lỗi đọc file: " + e.getMessage());
+            return;
+        }
+
+        if (!found) {
+            System.out.println("⚠️ Không tìm thấy khách hàng!");
+            return;
+        }
+
+        try (FileWriter fw = new FileWriter(file, false)) {
+            for (String l : ds) fw.write(l.strip() + System.lineSeparator());
+            System.out.println("💾 Cập nhật loại thành viên thành công!");
+        } catch (IOException e) {
+            System.out.println("❌ Lỗi ghi file: " + e.getMessage());
+        }
+    }
+    // 🟦 Chức năng 7: Xuất toàn bộ danh sách khách hàng ra file .txt
+    public void xuatDanhSachKhachHang() {
+        File inputFile = new File("customers.txt");
+        File outputFile = new File("export_customers.txt");
+
+        if (!inputFile.exists()) {
+            System.out.println("⚠️ File customers.txt chưa tồn tại, không thể xuất!");
+            return;
+        }
+
+        try (
+            BufferedReader br = new BufferedReader(new FileReader(inputFile));
+            FileWriter fw = new FileWriter(outputFile, false)
+        ) {
+            fw.write("====== DANH SÁCH KHÁCH HÀNG ======\n");
+            fw.write("Ngày xuất: " + java.time.LocalDateTime.now() + "\n");
+            fw.write("----------------------------------\n");
+
+            String line;
+            while ((line = br.readLine()) != null) {
+                fw.write(line + System.lineSeparator());
+            }
+
+            fw.write("==================================\n");
+            System.out.println("💾 Đã xuất danh sách khách hàng ra file: export_customers.txt");
+
+        } catch (IOException e) {
+            System.out.println("❌ Lỗi xuất file: " + e.getMessage());
+        }
+    }
 
     // 🟨 Chức năng 8: Giao diện quản lý khách hàng (hiển thị trực quan)
     public void hienThiGiaoDienQuanLy() {
@@ -133,8 +309,12 @@ public class CustomerService {
         JPanel panel = new JPanel();
         JButton btnAdd = new JButton("Thêm KH");
         JButton btnUpdate = new JButton("Cập nhật điểm");
+        JButton btnLoai = new JButton("Cập nhật loại");
+        JButton btnExport = new JButton("Xuất danh sách");
         panel.add(btnAdd);
         panel.add(btnUpdate);
+        panel.add(btnLoai);
+        panel.add(btnExport);
         frame.add(panel, BorderLayout.SOUTH);
 
         // Nạp dữ liệu từ file
@@ -152,13 +332,22 @@ public class CustomerService {
             model.setRowCount(0);
             napDuLieuTuFile(model);
         });
+        btnLoai.addActionListener(e -> {
+        capNhatLoaiThanhVien();
+        model.setRowCount(0);
+        napDuLieuTuFile(model);
+        });
+        btnExport.addActionListener(e -> {
+        xuatDanhSachKhachHang();
+        });
+
 
         frame.setVisible(true);
     }
 
     // 🧩 Hàm phụ: đọc file customers.txt và đổ dữ liệu lên bảng
     private void napDuLieuTuFile(DefaultTableModel model) {
-        File file = new File("customers.txt");
+        File file = new File(FILE_PATH);
         if (!file.exists()) return;
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
