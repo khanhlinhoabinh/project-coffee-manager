@@ -58,6 +58,53 @@ public class CustomerService {
             System.out.println("❌ Lỗi khi ghi file: " + e.getMessage());
         }
     }
+        // 🟩 Chức năng 2: Xóa khách hàng theo Mã KH
+    public void xoaKhachHang() {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("🗑️ Nhập mã khách hàng cần xóa: ");
+        String maKH = sc.nextLine().trim();
+
+        File file = new File("customers.txt");
+        if (!file.exists()) {
+            System.out.println("⚠️ File customers.txt chưa tồn tại!");
+            return;
+        }
+
+        List<String> lines = new ArrayList<>();
+        boolean found = false;
+
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                // Kiểm tra xem dòng có chứa mã KH cần xóa không
+                if (line.contains("Mã KH: " + maKH)) {
+                    found = true;
+                    continue; // bỏ qua dòng này (tức là xóa)
+                }
+                lines.add(line);
+            }
+        } catch (IOException e) {
+            System.out.println("❌ Lỗi đọc file: " + e.getMessage());
+            return;
+        }
+
+        if (!found) {
+            System.out.println("❗ Không tìm thấy khách hàng có mã " + maKH);
+            return;
+        }
+
+        // Ghi lại file sau khi xóa
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
+            for (String l : lines) {
+                bw.write(l);
+                bw.newLine();
+            }
+            System.out.println("✅ Đã xóa khách hàng có mã " + maKH + " thành công!");
+        } catch (IOException e) {
+            System.out.println("❌ Lỗi ghi file: " + e.getMessage());
+        }
+    }
+
 
         // 🟦 Chức năng 3: Cập nhật thông tin khách hàng (tên, SĐT, loại thành viên)
     public void capNhatThongTinKhachHang() {
@@ -347,11 +394,13 @@ public class CustomerService {
         JButton btnLoai = new JButton("Cập nhật loại");
         JButton btnExport = new JButton("Xuất danh sách");
         JButton btnSearch = new JButton("Tìm kiếm");
+        JButton btnDelete = new JButton("Xóa KH");
         panel.add(btnAdd);
         panel.add(btnUpdate);
         panel.add(btnLoai);
         panel.add(btnExport);
         panel.add(btnSearch);
+        panel.add(btnDelete);
         frame.add(panel, BorderLayout.SOUTH);
 
         // Nạp dữ liệu từ file
@@ -380,7 +429,11 @@ public class CustomerService {
         btnSearch.addActionListener(e -> {
         timKiemKhachHang();
         });
-
+        btnDelete.addActionListener(e -> {
+        xoaKhachHang();
+        model.setRowCount(0);
+        napDuLieuTuFile(model);
+        });
 
         frame.setVisible(true);
     }
