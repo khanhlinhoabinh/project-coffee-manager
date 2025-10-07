@@ -88,6 +88,9 @@ public class OrderService {
             System.out.println("⚠️ File đơn hàng chưa tồn tại. Hãy tạo đơn hàng trước!");
         } catch (IOException e) {
             System.out.println("❌ Lỗi khi đọc file: " + e.getMessage());
+        }
+    }
+    
     
     
     // 🟦 Chức năng 5: Cập nhật trạng thái đơn hàng (chờ/đang phục vụ/xong)
