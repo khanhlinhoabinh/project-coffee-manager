@@ -148,4 +148,132 @@ public class RevenueService {
         }
     }
 
+    // 🟩 Chức năng 4: Thống kê đơn hàng (hiển thị trực quan console)
+public void thongKeDonHang() {
+    File file = new File("orders.txt");
+    if (!file.exists()) {
+        System.out.println("\u001B[33m⚠️  File orders.txt chưa tồn tại!\u001B[0m");
+        return;
+    }
+
+    int tongDon = 0, donThanhCong = 0, donHuy = 0;
+
+    try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+        String line;
+        while ((line = br.readLine()) != null) {
+            // Mỗi dòng: orderId, drinkName, quantity, price, status
+            String[] parts = line.split(",");
+            if (parts.length < 5) continue;
+
+            tongDon++;
+            String status = parts[4].trim().toUpperCase();
+            if (status.equals("SUCCESS") || status.equals("THANHCONG"))
+                donThanhCong++;
+            else if (status.equals("CANCEL") || status.equals("HUY"))
+                donHuy++;
+        }
+    } catch (IOException e) {
+        System.out.println("\u001B[31m❌ Lỗi đọc file orders.txt: " + e.getMessage() + "\u001B[0m");
+        return;
+    }
+
+    System.out.println("\n\u001B[36m╔══════════════════════════════════════╗");
+    System.out.println("║        📦 THỐNG KÊ ĐƠN HÀNG 📦       ║");
+    System.out.println("╠══════════════════════════════════════╣");
+    System.out.printf("║ Tổng số đơn hàng     : %5d           ║\n", tongDon);
+    System.out.printf("║ ✅ Thành công         : %5d           ║\n", donThanhCong);
+    System.out.printf("║ ❌ Bị hủy             : %5d           ║\n", donHuy);
+    System.out.println("╚══════════════════════════════════════╝\u001B[0m");
+
+    if (tongDon > 0) {
+        double tiLeTC = (donThanhCong * 100.0) / tongDon;
+        double tiLeHuy = (donHuy * 100.0) / tongDon;
+
+        System.out.println("\n📊 TỈ LỆ GIAO DỊCH:");
+        System.out.println("Thành công: " + "\u001B[32m" + String.format("%.1f%%", tiLeTC) + "\u001B[0m");
+        System.out.println("Bị hủy    : " + "\u001B[31m" + String.format("%.1f%%", tiLeHuy) + "\u001B[0m");
+
+        // Vẽ mini biểu đồ tỷ lệ bằng ký tự █
+        int tcBar = (int) (tiLeTC / 2);
+        int huyBar = (int) (tiLeHuy / 2);
+        System.out.println("\n" + "\u001B[32m" + "█".repeat(tcBar) + "\u001B[0m" +
+                           "\u001B[31m" + "█".repeat(huyBar) + "\u001B[0m");
+        System.out.println("⬅️  Thành công         Hủy ➡️");
+    }
+}
+
+// 🟦 Chức năng 5: Báo cáo trực quan doanh thu bằng console log
+public void hienThiBaoCaoTrucQuan() {
+    File file = new File(REVENUE_FILE);
+    if (!file.exists()) {
+        System.out.println("\u001B[33m⚠️  File revenue.txt chưa tồn tại! Hãy chạy tính doanh thu hằng ngày trước.\u001B[0m");
+        return;
+    }
+
+    Map<String, Double> data = new LinkedHashMap<>();
+
+    try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+        String line;
+        while ((line = br.readLine()) != null) {
+            if (!line.startsWith("Ngày:")) continue;
+            String[] parts = line.split("\\|");
+            if (parts.length < 2) continue;
+
+            String date = parts[0].replace("Ngày:", "").trim();
+            double value = Double.parseDouble(parts[1].replaceAll("[^0-9]", ""));
+            data.put(date, value);
+        }
+    } catch (IOException e) {
+        System.out.println("\u001B[31m❌ Lỗi đọc file revenue.txt: " + e.getMessage() + "\u001B[0m");
+        return;
+    }
+
+    if (data.isEmpty()) {
+        System.out.println("❌ Không có dữ liệu để hiển thị!");
+        return;
+    }
+
+    double max = Collections.max(data.values());
+    System.out.println("\n\u001B[36m📊 BIỂU ĐỒ DOANH THU THEO NGÀY\u001B[0m");
+    System.out.println("───────────────────────────────────────────────────────────────");
+
+    for (var entry : data.entrySet()) {
+        String date = entry.getKey();
+        double value = entry.getValue();
+        int length = (int) ((value / max) * 40); // 40 ký tự là full cột
+        String bar = "\u001B[32m" + "█".repeat(Math.max(1, length)) + "\u001B[0m";
+        System.out.printf("%s | %-40s %.0f VND\n", date, bar, value);
+    }
+
+    System.out.println("───────────────────────────────────────────────────────────────");
+    System.out.println("\u001B[34m💡 Mỗi ký tự █ ~ " + String.format("%.0f", max / 40) + " VNĐ\u001B[0m");
+}
+// 🟦 MENU CONSOLE
+    public void showMenu() {
+        Scanner sc = new Scanner(System.in);
+        while (true) {
+            System.out.println("\n=== 📋 MENU THỐNG KÊ & DOANH THU ===");
+            System.out.println("1️⃣  Tính doanh thu hằng ngày");
+            System.out.println("2️⃣  Tính doanh thu theo khoảng thời gian");
+            System.out.println("3️⃣  Thống kê món bán chạy");
+            System.out.println("4️⃣  Thống kê đơn hàng (Tổng/Thành công/Hủy)");
+            System.out.println("5️⃣  Hiển thị báo cáo trực quan (console chart)");
+            System.out.println("0️⃣  Thoát");
+            System.out.print("➡️ Chọn chức năng: ");
+
+            String choice = sc.nextLine().trim();
+            switch (choice) {
+                case "1": tinhDoanhThuHangNgay(); break;
+                case "2": tinhDoanhThuTheoKhoangThoiGian(); break;
+                case "3": thongKeMonBanChay(); break;
+                case "4": thongKeDonHang(); break;
+                case "5": hienThiBaoCaoTrucQuan(); break;
+                case "0":
+                    System.out.println("👋 Thoát menu thống kê.");
+                    return;
+                default:
+                    System.out.println("❌ Lựa chọn không hợp lệ!");
+            }
+        }
+    }
 }
