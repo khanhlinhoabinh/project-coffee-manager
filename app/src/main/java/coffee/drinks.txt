@@ -1,0 +1,10 @@
+D001,Espresso,Coffee,35000,Small,available
+D002,Cappuccino,Coffee,45000,Medium,available
+D003,Latte,Coffee,48000,Large,available
+D004,Green Tea,Tea,30000,Medium,available
+D005,Black Tea,Tea,28000,Small,available
+D006,Matcha Latte,Tea,52000,Large,out of stock
+D007,Chocolate Milk,Milk,40000,Medium,available
+D008,Caramel Macchiato,Coffee,50000,Large,available
+D009,Lemonade,Juice,30000,Medium,available
+D010,Orange Juice,Juice,32000,Medium,available
