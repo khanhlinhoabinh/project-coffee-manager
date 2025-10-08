@@ -3,12 +3,54 @@
  */
 package coffee;
 
-public class App {
-    public String getGreeting() {
-        return "Hello World!";
-    }
+import coffee.service.*;
+import java.util.Scanner;
 
+public class App {
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+        System.setProperty("file.encoding", "UTF-8");
+        Scanner sc = new Scanner(System.in);
+        DrinkService drinkService = new DrinkService();
+        CustomerService customerService = new CustomerService();
+        OrderService orderService = new OrderService();
+        PaymentService paymentService = new PaymentService();
+        RevenueService revenueService = new RevenueService();
+
+        while (true) {
+            System.out.println("\n===============================");
+            System.out.println(" ☕ HỆ THỐNG QUẢN LÝ COFFEE SHOP ");
+            System.out.println("===============================");
+            System.out.println("1️⃣  Quản lý đồ uống");
+            System.out.println("2️⃣  Quản lý khách hàng");
+            System.out.println("3️⃣  Quản lý đơn hàng");
+            System.out.println("4️⃣  Quản lý thanh toán");
+            System.out.println("5️⃣  Báo cáo & thống kê doanh thu");
+            System.out.println("0️⃣  Thoát chương trình");
+            System.out.print("➡️  Chọn chức năng: ");
+
+            String choice = sc.nextLine().trim();
+            switch (choice) {
+                case "1":
+                    drinkService.menu();
+                    break;
+                case "2":
+                    customerService.hienThiGiaoDienQuanLy();
+                    break;
+                case "3":
+                    orderService.hienThiGiaoDienQuanLyDonHang();
+                    break;
+                case "4":
+                    paymentService.hienThiGiaoDienThanhToan();
+                    break;
+                case "5":
+                    revenueService.showMenu();
+                    break;
+                case "0":
+                    System.out.println("👋 Cảm ơn bạn đã sử dụng hệ thống Coffee Manager!");
+                    return;
+                default:
+                    System.out.println("❌ Lựa chọn không hợp lệ! Vui lòng nhập lại.");
+            }
+        }
     }
 }
