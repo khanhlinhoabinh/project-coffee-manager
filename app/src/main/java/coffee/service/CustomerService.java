@@ -3,10 +3,6 @@ import coffee.model.Customer;
 import java.io.*;
 import java.util.*;
 import java.util.List;
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
-import java.awt.event.*;
 
 
 
