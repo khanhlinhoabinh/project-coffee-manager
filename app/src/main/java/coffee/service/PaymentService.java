@@ -191,4 +191,30 @@ public class PaymentService {
             System.out.println("❌ Không tìm thấy mã thanh toán: " + paymentId);
         }
     }
+
+    // 🧾 Giao diện chính cho chức năng thanh toán
+    public void hienThiGiaoDienThanhToan() {
+    while (true) {
+        System.out.println("\n===== GIAO DIỆN THANH TOÁN =====");
+        System.out.println("1. Tạo thanh toán mới");
+        System.out.println("2. Tìm kiếm thanh toán");
+        System.out.println("3. Quản lý phương thức thanh toán");
+        System.out.println("4. In hóa đơn");
+        System.out.println("0. Thoát");
+        System.out.print("➡️ Chọn chức năng: ");
+        String chon = sc.nextLine();
+
+        switch (chon) {
+            case "1" -> taoThanhToanMoi();
+            case "2" -> timKiemThanhToan();
+            case "3" -> quanLyPhuongThucThanhToan();
+            case "4" -> inHoaDon();
+            case "0" -> {
+                System.out.println("Đã thoát giao diện thanh toán.");
+                return;
+            }
+            default -> System.out.println("❌ Lựa chọn không hợp lệ!");
+        }
+    }
+}
 }
