@@ -2,17 +2,14 @@ package coffee.service;
 
 import java.io.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 
 public class PaymentService {
     private final String FILE_NAME = "payments.txt";
-    private Scanner sc = new Scanner(System.in);
+    private final Scanner sc = new Scanner(System.in);
 
     // 🟩 Chức năng 1: Tạo thanh toán mới và lưu vào file .txt
     public void taoThanhToanMoi() {
-        Scanner sc = new Scanner(System.in);
-
         System.out.print("Nhập mã thanh toán: ");
         String paymentId = sc.nextLine().trim();
 
@@ -20,30 +17,29 @@ public class PaymentService {
         String orderId = sc.nextLine().trim();
 
         System.out.print("Nhập số tiền thanh toán: ");
-        double amount = 0;
+        double amount;
         try {
             amount = Double.parseDouble(sc.nextLine().trim());
         } catch (NumberFormatException e) {
-            System.out.println("❌ Lỗi: Số tiền không hợp lệ!");
+            System.out.println("❌ Số tiền không hợp lệ!");
             return;
         }
 
-        System.out.print("Nhập hình thức thanh toán (Tiền mặt/Chuyển khoản/Momo...): ");
+        System.out.print("Nhập hình thức thanh toán: ");
         String method = sc.nextLine().trim();
 
         LocalDate paymentDate = LocalDate.now();
 
-        // Ghi vào file
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("payments.txt", true))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME, true))) {
             writer.write(paymentId + "," + orderId + "," + amount + "," + method + "," + paymentDate);
             writer.newLine();
-            System.out.println("✅ Thanh toán đã được ghi nhận thành công!");
+            System.out.println("✅ Thanh toán đã được ghi nhận!");
         } catch (IOException e) {
             System.out.println("❌ Lỗi ghi file: " + e.getMessage());
         }
     }
 
-    // 🟦 Chức năng 2: Cập nhật thông tin thanh toán (số tiền hoặc phương thức)
+    // 🟦 Chức năng 2: Cập nhật thông tin thanh toán
     public void capNhatThanhToan() {
         System.out.print("Nhập mã thanh toán cần cập nhật: ");
         String paymentId = sc.nextLine().trim();
@@ -61,11 +57,11 @@ public class PaymentService {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length >= 5 && parts[0].equals(paymentId)) {
+                if (parts.length >= 5 && parts[0].equalsIgnoreCase(paymentId)) {
                     System.out.println("🔍 Thông tin hiện tại: " + line);
-                    System.out.print("Nhập số tiền mới (bỏ qua nếu không đổi): ");
+                    System.out.print("Nhập số tiền mới (Enter để giữ nguyên): ");
                     String newAmount = sc.nextLine().trim();
-                    System.out.print("Nhập phương thức mới (bỏ qua nếu không đổi): ");
+                    System.out.print("Nhập phương thức mới (Enter để giữ nguyên): ");
                     String newMethod = sc.nextLine().trim();
 
                     if (!newAmount.isEmpty()) parts[2] = newAmount;
@@ -80,8 +76,8 @@ public class PaymentService {
                 }
             }
         } catch (IOException e) {
-        System.out.println("❌ Lỗi đọc file: " + e.getMessage());
-        return;
+            System.out.println("❌ Lỗi đọc file: " + e.getMessage());
+            return;
         }
 
         if (!found) {
@@ -89,20 +85,58 @@ public class PaymentService {
             return;
         }
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, false))) {
-            for (String l : lines) {
-                writer.write(l);
-                writer.newLine();
-            }
-            System.out.println("💾 File payments.txt đã được cập nhật!");
-        } catch (IOException e) {
-            System.out.println("❌ Lỗi ghi file: " + e.getMessage());
-        }
+        ghiLaiFile(lines);
     }
 
-    // 🟦 Chức Năng 4: Tìm kiếm thanh toán theo mã TT, mã đơn hoặc ngày
+    // 🟥 Chức năng 3: Hủy giao dịch thanh toán
+    public void huyThanhToan() {
+        System.out.print("Nhập mã thanh toán cần hủy: ");
+        String paymentId = sc.nextLine().trim();
+
+        File file = new File(FILE_NAME);
+        if (!file.exists()) {
+            System.out.println("⚠️ File chưa tồn tại!");
+            return;
+        }
+
+        List<String> lines = new ArrayList<>();
+        boolean found = false;
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length >= 5 && parts[0].equalsIgnoreCase(paymentId)) {
+                    found = true;
+                    System.out.println("⚠️ Xác nhận hủy thanh toán này: " + line);
+                    System.out.print("Bạn có chắc chắn muốn hủy? (y/n): ");
+                    String confirm = sc.nextLine().trim().toLowerCase();
+                    if (!confirm.equals("y")) {
+                        lines.add(line); // giữ lại nếu không đồng ý
+                        System.out.println("✅ Hủy thao tác xóa.");
+                    } else {
+                        System.out.println("🗑️ Đã xóa thanh toán: " + paymentId);
+                    }
+                } else {
+                    lines.add(line);
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("❌ Lỗi đọc file: " + e.getMessage());
+            return;
+        }
+
+        if (!found) {
+            System.out.println("❌ Không tìm thấy mã thanh toán cần hủy!");
+            return;
+        }
+
+        ghiLaiFile(lines);
+    }
+
+    // 🟦 Chức năng 4: Tìm kiếm thanh toán
     public void timKiemThanhToan() {
-        System.out.print("Nhập từ khóa tìm kiếm (mã TT, mã đơn, hoặc ngày): ");
+        System.out.print("Nhập từ khóa tìm kiếm: ");
         String keyword = sc.nextLine().trim().toLowerCase();
 
         File file = new File(FILE_NAME);
@@ -127,8 +161,8 @@ public class PaymentService {
         if (!found)
             System.out.println("❌ Không tìm thấy kết quả phù hợp!");
     }
-    
-    // 🟩 Feature 5: Quản lý phương thức thanh toán
+
+    // 🟩 Chức năng 5: Quản lý phương thức thanh toán
     public void quanLyPhuongThucThanhToan() {
         System.out.println("\n===== Quản lý phương thức thanh toán =====");
         System.out.println("1. Tiền mặt");
@@ -187,34 +221,53 @@ public class PaymentService {
             System.out.println("❌ Lỗi khi đọc file: " + e.getMessage());
         }
 
-        if (!found) {
+        if (!found)
             System.out.println("❌ Không tìm thấy mã thanh toán: " + paymentId);
-        }
     }
 
     // 🧾 Giao diện chính cho chức năng thanh toán
     public void hienThiGiaoDienThanhToan() {
-    while (true) {
-        System.out.println("\n===== GIAO DIỆN THANH TOÁN =====");
-        System.out.println("1. Tạo thanh toán mới");
-        System.out.println("2. Tìm kiếm thanh toán");
-        System.out.println("3. Quản lý phương thức thanh toán");
-        System.out.println("4. In hóa đơn");
-        System.out.println("0. Thoát");
-        System.out.print("➡️ Chọn chức năng: ");
-        String chon = sc.nextLine();
+        while (true) {
+            System.out.println("\n===== GIAO DIỆN THANH TOÁN =====");
+            System.out.println("1. Tạo thanh toán mới");
+            System.out.println("2. Tìm kiếm thanh toán");
+            System.out.println("3. Hủy thanh toán");
+            System.out.println("4. Quản lý phương thức thanh toán");
+            System.out.println("5. In hóa đơn");
+            System.out.println("0. Thoát");
+            System.out.print("➡️ Chọn chức năng: ");
+            String chon = sc.nextLine();
 
-        switch (chon) {
-            case "1" -> taoThanhToanMoi();
-            case "2" -> timKiemThanhToan();
-            case "3" -> quanLyPhuongThucThanhToan();
-            case "4" -> inHoaDon();
-            case "0" -> {
-                System.out.println("Đã thoát giao diện thanh toán.");
-                return;
+            switch (chon) {
+                case "1" -> taoThanhToanMoi();
+                case "2" -> timKiemThanhToan();
+                case "3" -> huyThanhToan();
+                case "4" -> quanLyPhuongThucThanhToan();
+                case "5" -> inHoaDon();
+                case "0" -> {
+                    System.out.println("Đã thoát giao diện thanh toán.");
+                    return;
+                }
+                default -> System.out.println("❌ Lựa chọn không hợp lệ!");
             }
-            default -> System.out.println("❌ Lựa chọn không hợp lệ!");
         }
     }
-}
+
+    // 🧩 Hàm tiện ích: ghi lại file sau khi cập nhật/xóa
+    private void ghiLaiFile(List<String> lines) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME, false))) {
+            for (String l : lines) {
+                writer.write(l);
+                writer.newLine();
+            }
+            System.out.println("💾 File payments.txt đã được cập nhật!");
+        } catch (IOException e) {
+            System.out.println("❌ Lỗi ghi file: " + e.getMessage());
+        }
+    }
+
+    // Main thử
+    public static void main(String[] args) {
+        new PaymentService().hienThiGiaoDienThanhToan();
+    }
 }
