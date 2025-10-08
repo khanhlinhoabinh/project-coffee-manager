@@ -372,100 +372,57 @@ public class CustomerService {
         }
     }
 
-    // 🟨 Chức năng 8: Giao diện quản lý khách hàng (hiển thị trực quan)
-    public void hienThiGiaoDienQuanLy() {
-        JFrame frame = new JFrame("Giao diện quản lý khách hàng");
-        frame.setSize(900, 500);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLocationRelativeTo(null);
+    // 🟨 Chức năng 8: Quản lý khách hàng (phiên bản console)
+public void hienThiGiaoDienQuanLy() {
+    Scanner sc = new Scanner(System.in);
+    int choice;
 
-        // Bảng dữ liệu
-        DefaultTableModel model = new DefaultTableModel(
-            new String[]{"Mã KH", "Tên", "SĐT", "Email", "Địa chỉ", "Điểm"}, 0
-        );
-        JTable table = new JTable(model);
-        JScrollPane scrollPane = new JScrollPane(table);
-        frame.add(scrollPane, BorderLayout.CENTER);
+    do {
+        System.out.println("\n===============================");
+        System.out.println(" 📋 QUẢN LÝ KHÁCH HÀNG (Console)");
+        System.out.println("===============================");
+        System.out.println("1️⃣  Thêm khách hàng mới");
+        System.out.println("2️⃣  Cập nhật thông tin khách hàng");
+        System.out.println("3️⃣  Cập nhật điểm tích lũy");
+        System.out.println("4️⃣  Cập nhật loại thành viên");
+        System.out.println("5️⃣  Tìm kiếm khách hàng");
+        System.out.println("6️⃣  Xóa khách hàng");
+        System.out.println("7️⃣  Xuất danh sách khách hàng");
+        System.out.println("0️⃣  Thoát");
+        System.out.print("➡️  Chọn chức năng: ");
 
-        // Thanh nút chức năng
-        JPanel panel = new JPanel();
-        JButton btnAdd = new JButton("Thêm KH");
-        JButton btnUpdate = new JButton("Cập nhật điểm");
-        JButton btnLoai = new JButton("Cập nhật loại");
-        JButton btnExport = new JButton("Xuất danh sách");
-        JButton btnSearch = new JButton("Tìm kiếm");
-        JButton btnDelete = new JButton("Xóa KH");
-        panel.add(btnAdd);
-        panel.add(btnUpdate);
-        panel.add(btnLoai);
-        panel.add(btnExport);
-        panel.add(btnSearch);
-        panel.add(btnDelete);
-        frame.add(panel, BorderLayout.SOUTH);
+        choice = Integer.parseInt(sc.nextLine().trim());
+        System.out.println();
 
-        // Nạp dữ liệu từ file
-        napDuLieuTuFile(model);
-
-        // Sự kiện nút
-        btnAdd.addActionListener(e -> {
-            themKhachHangVaLuuFile();
-            model.setRowCount(0);
-            napDuLieuTuFile(model);
-        });
-
-        btnUpdate.addActionListener(e -> {
-            capNhatDiemTichLuy();
-            model.setRowCount(0);
-            napDuLieuTuFile(model);
-        });
-        btnLoai.addActionListener(e -> {
-        capNhatLoaiThanhVien();
-        model.setRowCount(0);
-        napDuLieuTuFile(model);
-        });
-        btnExport.addActionListener(e -> {
-        xuatDanhSachKhachHang();
-        });
-        btnSearch.addActionListener(e -> {
-        timKiemKhachHang();
-        });
-        btnDelete.addActionListener(e -> {
-        xoaKhachHang();
-        model.setRowCount(0);
-        napDuLieuTuFile(model);
-        });
-
-        frame.setVisible(true);
-    }
-
-    // 🧩 Hàm phụ: đọc file customers.txt và đổ dữ liệu lên bảng
-    private void napDuLieuTuFile(DefaultTableModel model) {
-        File file = new File(FILE_PATH);
-        if (!file.exists()) return;
-
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = br.readLine()) != null && !line.isEmpty()) {
-                String[] parts = line.split("\\|");
-                if (parts.length >= 6) {
-                    String maKH = parts[0].replace("Mã KH:", "").trim();
-                    String ten = parts[1].replace("Tên:", "").trim();
-                    String sdt = parts[2].replace("SĐT:", "").trim();
-                    String email = parts[3].replace("Email:", "").trim();
-                    String diaChi = parts[4].replace("Địa chỉ:", "").trim();
-                    String diem = parts[5].replace("Điểm:", "").trim();
-                    model.addRow(new Object[]{maKH, ten, sdt, email, diaChi, diem});
-                }
-            }
-        } catch (IOException e) {
-            System.out.println("❌ Lỗi đọc file: " + e.getMessage());
+        switch (choice) {
+            case 1:
+                themKhachHangVaLuuFile();
+                break;
+            case 2:
+                capNhatThongTinKhachHang();
+                break;
+            case 3:
+                capNhatDiemTichLuy();
+                break;
+            case 4:
+                capNhatLoaiThanhVien();
+                break;
+            case 5:
+                timKiemKhachHang();
+                break;
+            case 6:
+                xoaKhachHang();
+                break;
+            case 7:
+                xuatDanhSachKhachHang();
+                break;
+            case 0:
+                System.out.println("🔚 Thoát quản lý khách hàng.");
+                break;
+            default:
+                System.out.println("⚠️  Lựa chọn không hợp lệ, vui lòng thử lại.");
         }
-    }
+    } while (choice != 0);
+}
 
-    // 🟢 Hàm main để chạy giao diện
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            new CustomerService().hienThiGiaoDienQuanLy();
-        });
-    }
 }
